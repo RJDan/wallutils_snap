@@ -1,0 +1,203 @@
+name: rjd-wallutils
+title: wallutils
+base: core22 # the base snap is the execution environment for this snap
+version: '5.12.5' # just for humans, typically '1.2+git' or '1.3.2'
+summary:  Utilities for wallpapers
+description: |
+  ' Utilities for handling monitors, resolutions, wallpapers and timed wallpapers'
+  The description above refers to the software: https://github.com/xyproto/wallutils.git
+  * I have packaged the software as a snap for **personal use** but I have made the snap available for free.
+  * I do not maintain the software itself. I only maintain the snap. Please report software bugs to the maintainers.
+  * Report snap-specific bugs to me.
+  * I _DO NOT_ use this snap. It _has NOT been tested_ on my system.
+  * Packaging 'style' : git build for linux machines.
+  * License refers to the original software, not the snapcraft 'code'.
+website: https://github.com/RJDan/wallutils_snap
+
+grade: stable # must be 'stable' to release into candidate/stable channels
+confinement: strict # use 'strict' once you have the right plugs and slots
+license: BSD-3-Clause
+
+apps:
+    getdpi:
+        command: usr/bin/getdpi
+        extensions: [gnome]
+        plugs:
+          - home
+          - x11
+          - wayland
+          - desktop
+          - desktop-legacy
+          - unity7
+    lscollection:
+        command: usr/bin/lscollection
+        plugs:
+          - home
+    timedinfo:
+        command: usr/bin/timedinfo
+        plugs:
+          - home
+    lsmon:
+        command: usr/bin/lsmon
+        extensions: [gnome]
+        plugs:
+          - home
+          - x11
+          - wayland
+          - desktop
+          - desktop-legacy
+          - unity7
+    lstimed:
+        command: usr/bin/lstimed
+        plugs:
+          - home
+    lswallpaper:
+        command: usr/bin/lswallpaper
+        plugs:
+          - home
+    setcollection:
+        command: usr/bin/setcollection
+        plugs:
+          - home
+    setrandom:
+        command: usr/bin/setrandom
+        plugs:
+          - home
+    settimed:
+        command: usr/bin/settimed
+        extensions: [gnome]
+        plugs:
+          - home
+          - x11
+          - wayland
+          - desktop
+          - desktop-legacy
+          - unity7
+    setwallpaper:
+        extensions: [gnome]
+        command: usr/bin/setwallpaper
+        plugs:
+          - home
+          - x11
+          - wayland
+          - desktop
+          - desktop-legacy
+          - unity7
+    wayinfo:
+        command: usr/bin/wayinfo
+        plugs:
+          - home
+          - x11
+          - wayland
+          - desktop
+          - desktop-legacy
+          - unity7
+    xinfo:
+        command: usr/bin/xinfo
+        plugs:
+          - home
+          - x11
+          - desktop
+          - desktop-legacy
+          - unity7
+    xml2stw:
+        command: usr/bin/xml2stw
+        extensions: [gnome]
+        plugs:
+          - home
+    heic2stw:
+        command: usr/bin/heic2stw
+        plugs:
+          - home
+    vram:
+        command: usr/bin/vram
+        plugs:
+          - home
+          - x11
+          - wayland
+          - desktop
+          - desktop-legacy
+          - unity7
+
+
+environment:
+  # This is one of four snippets that relate to providing the userspace graphics needed by your application.
+  #LD_LIBRARY_PATH:    $SNAP/graphics/lib
+  #LIBGL_DRIVERS_PATH: $SNAP/graphics/dri
+  #LIBVA_DRIVERS_PATH: $SNAP/graphics/dri
+  #__EGL_VENDOR_LIBRARY_DIRS: $SNAP/graphics/glvnd/egl_vendor.d
+  # Other, generally useful environment settings...
+  # XDG config
+  #XDG_CACHE_HOME:  $SNAP_USER_COMMON/.cache
+  #XDG_CONFIG_HOME: $SNAP_USER_DATA/.config
+  #XDG_CONFIG_DIRS: $SNAP/etc/xdg
+  # XKB config
+  #XKB_CONFIG_ROOT: $SNAP/usr/share/X11/xkb
+  #XDG_CURRENT_DESKTOP : Unity
+  #XDG_RUNTIME_DIR ??
+
+          
+layout:
+  # This is one of four snippets that relate to providing the userspace graphics needed by your application.
+  /usr/share/libdrm:  # Needed by mesa-core20 on AMD GPUs  
+    bind: $SNAP/graphics/libdrm
+  /usr/share/drirc.d:  # Used by mesa-core20 for app specific workarounds
+    bind: $SNAP/graphics/drirc.d
+  /usr/share/fonts:
+    bind: $SNAP/usr/share/fonts
+  /usr/share/icons:
+    bind: $SNAP/usr/share/icons
+  /usr/share/wallpapers:
+    bind: $SNAP/usr/share/wallpapers
+  /usr/share/backgrounds:
+    bind: $SNAP/usr/share/backgrounds
+
+          
+parts:
+    wallutils:
+        source: https://github.com/xyproto/wallutils.git
+        source-type: git
+        source-tag: "5.12.5"
+        # See 'snapcraft plugins'
+        plugin: make
+        organize:
+            "Icon_230615.svg" : snap/Icon_230615.svg
+        make-parameters:
+        - prefix=/usr/local
+# sudo make PREFIX=/usr/local install
+        build-packages:
+        - git
+        - golang
+        - imagemagick 
+        - libx11-dev
+        - libxcursor-dev
+        - libxmu-dev
+        - libwayland-dev
+        - libxpm-dev
+        - xbitmaps
+        - libxmu-headers
+        - libheif-dev
+        - make
+        stage-packages:
+        - gobject-introspection
+        - libwayland-cursor0
+        - libwayland-egl1
+        - libxcomposite1
+        - libxcursor1
+        - libxdamage1
+        - libxfixes3
+        - libxi6
+        - libxinerama1
+        - libxkbcommon0
+        - libxrandr2
+        - swaybg
+        - pciutils
+        - heif-gdk-pixbuf
+        - libheif1
+        # override-build: |
+        #     snapcraft build
+        #     cp getdpi lscollection timedinfo lsmon \
+        #     lstimed lswallpaper setcollection setrandom settimed \
+        #     setwallpaper wayinfo xinfo xml2stw heic2stw vram \$SNAPCRAFT_PART_INSTALL/bin
+
+            
